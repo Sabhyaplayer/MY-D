@@ -1,0 +1,14 @@
+{
+  "name": "xnx-speed-admin-dashboard",
+  "version": "4.0.0",
+  "description": "XNX SPEED Cloud License Manager & Key Rotation Dashboard by Sabhya Player",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=18.x"
+  }
+}

@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XNX SPEED - Admin License & Key Rotation Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@600;700;800;900&family=Rajdhani:wght@600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cyberDark: '#0A0A0E',
+            cyberCard: '#13131A',
+            cyberBorder: '#2A151D',
+            neonRed: '#FF1E44',
+            deepCrimson: '#E11D48',
+            darkRuby: '#880815',
+            neonGreen: '#10B981',
+            neonCyan: '#06B6D4',
+            neonAmber: '#F59E0B'
+          },
+          fontFamily: {
+            orbitron: ['Orbitron', 'sans-serif'],
+            rajdhani: ['Rajdhani', 'sans-serif'],
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #0A0A0E;
+      color: #F8FAFC;
+    }
+    .neon-border {
+      box-shadow: 0 0 15px rgba(255, 30, 68, 0.25);
+    }
+    .neon-glow-btn:hover {
+      box-shadow: 0 0 20px rgba(255, 30, 68, 0.5);
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0A0A0E;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #FF1E44;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-cyberDark flex flex-col font-sans antialiased selection:bg-neonRed selection:text-white">
+
+  <!-- ================= AUTHENTICATION MODAL ================= -->
+  <div id="loginModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md px-4">
+    <div class="w-full max-w-md bg-cyberCard border-2 border-neonRed rounded-xl p-8 neon-border relative overflow-hidden">
+      <div class="absolute -right-12 -top-12 w-32 h-32 bg-neonRed/10 rounded-full blur-2xl"></div>
+      
+      <!-- Logo -->
+      <div class="flex items-center space-x-3 mb-6">
+        <div class="w-12 h-12 rounded-full border-2 border-neonRed flex items-center justify-center font-orbitron font-extrabold text-neonRed text-lg bg-black">
+          XNX
+        </div>
+        <div>
+          <h1 class="font-orbitron font-black text-xl text-neonRed tracking-wider">XNX SPEED</h1>
+          <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest">Admin Control Center</p>
+        </div>
+      </div>
+
+      <div class="mb-6">
+        <label class="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-2">Master Admin Password</label>
+        <div class="relative">
+          <input type="password" id="adminPasswordInput" placeholder="Enter Admin Secret Key..."
+                 class="w-full bg-black/70 border border-cyberBorder focus:border-neonRed text-white px-4 py-3 rounded-lg font-mono text-sm outline-none transition duration-200">
+        </div>
+        <p id="loginError" class="text-xs text-neonRed font-semibold mt-2 hidden">❌ Invalid Admin Credentials!</p>
+        <p class="text-[11px] text-gray-400 mt-2 font-mono">Default Key: <span class="text-neonAmber">SABHYA@ADMIN#2026</span></p>
+      </div>
+
+      <button onclick="handleLogin()"
+              class="w-full bg-gradient-to-r from-neonRed to-deepCrimson hover:from-deepCrimson hover:to-neonRed text-white font-rajdhani font-bold text-lg py-3 rounded-lg tracking-wider uppercase transition duration-200 neon-glow-btn">
+        🔓 Unlock Admin Console
+      </button>
+
+      <div class="mt-6 pt-4 border-t border-cyberBorder flex items-center justify-between text-xs text-gray-400">
+        <span>Created by <b>Sabhya Player</b></span>
+        <a href="https://t.me/The_Sabhyaplayer" target="_blank" class="text-neonCyan hover:underline">@The_Sabhyaplayer</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MAIN ADMIN DASHBOARD ================= -->
+  <div id="dashboardApp" class="flex-1 flex flex-col hidden">
+
+    <!-- Top Navigation Header -->
+    <header class="bg-[#0F0F16] border-b-2 border-neonRed px-6 py-4 sticky top-0 z-40">
+      <div class="max-w-7xl mx-auto flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+          <div class="w-10 h-10 rounded-full border-2 border-neonRed flex items-center justify-center font-orbitron font-black text-neonRed text-sm bg-black">
+            XNX
+          </div>
+          <div>
+            <div class="flex items-center space-x-2">
+              <span class="font-orbitron font-extrabold text-lg text-neonRed tracking-wider">XNX SPEED</span>
+              <span class="bg-neonRed/20 text-neonRed text-[10px] font-mono px-2 py-0.5 rounded font-bold border border-neonRed/30">ADMIN v4.0</span>
+            </div>
+            <p class="text-xs text-gray-400 font-semibold">CLOUD LICENSE & KEY ROTATION CONTROLLER</p>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-4">
+          <div class="hidden md:flex items-center space-x-2 bg-black/60 border border-cyberBorder px-3 py-1.5 rounded-lg text-xs">
+            <span class="w-2.5 h-2.5 rounded-full bg-neonGreen animate-pulse"></span>
+            <span class="text-gray-300 font-mono">SERVER STATUS: <b class="text-neonGreen">ONLINE</b></span>
+          </div>
+
+          <a href="https://t.me/The_Sabhyaplayer" target="_blank"
+             class="flex items-center space-x-2 bg-[#1C0A10] border border-neonRed/50 hover:border-neonRed text-white px-3.5 py-1.5 rounded-lg text-xs font-bold transition">
+            <span>✈</span>
+            <span>@The_Sabhyaplayer</span>
+          </a>
+
+          <button onclick="handleLogout()" class="bg-red-900/40 hover:bg-red-900/70 border border-red-700/50 text-red-200 text-xs px-3 py-1.5 rounded-lg font-semibold transition">
+            Lock Console
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="max-w-7xl mx-auto w-full flex-1 p-6 space-y-6">
+
+      <!-- Real-Time Statistics Counters -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+        <div class="bg-cyberCard border border-cyberBorder rounded-xl p-4 relative overflow-hidden">
+          <div class="text-xs font-bold uppercase tracking-wider text-gray-400">Total Licenses</div>
+          <div id="statTotal" class="text-3xl font-orbitron font-black text-white mt-1">0</div>
+          <div class="text-[10px] text-gray-500 font-mono mt-1">Issued in DB</div>
+        </div>
+        <div class="bg-cyberCard border border-cyberBorder rounded-xl p-4 relative overflow-hidden">
+          <div class="text-xs font-bold uppercase tracking-wider text-neonGreen">Active Keys</div>
+          <div id="statActive" class="text-3xl font-orbitron font-black text-neonGreen mt-1">0</div>
+          <div class="text-[10px] text-gray-500 font-mono mt-1">Ready for execution</div>
+        </div>
+        <div class="bg-cyberCard border border-cyberBorder rounded-xl p-4 relative overflow-hidden">
+          <div class="text-xs font-bold uppercase tracking-wider text-neonRed">Revoked Keys</div>
+          <div id="statRevoked" class="text-3xl font-orbitron font-black text-neonRed mt-1">0</div>
+          <div class="text-[10px] text-gray-500 font-mono mt-1">Terminated access</div>
+        </div>
+        <div class="bg-cyberCard border border-cyberBorder rounded-xl p-4 relative overflow-hidden">
+          <div class="text-xs font-bold uppercase tracking-wider text-neonAmber">Expired Keys</div>
+          <div id="statExpired" class="text-3xl font-orbitron font-black text-neonAmber mt-1">0</div>
+          <div class="text-[10px] text-gray-500 font-mono mt-1">Past validity date</div>
+        </div>
+        <div class="bg-cyberCard border border-cyberBorder rounded-xl p-4 relative overflow-hidden">
+          <div class="text-xs font-bold uppercase tracking-wider text-red-500">Blocked HWIDs</div>
+          <div id="statBlocked" class="text-3xl font-orbitron font-black text-red-500 mt-1">0</div>
+          <div class="text-[10px] text-gray-500 font-mono mt-1">Blacklisted devices</div>
+        </div>
+      </div>
+
+      <!-- MASTER KEY ROTATION HERO PANEL -->
+      <div class="bg-gradient-to-r from-[#180A10] via-cyberCard to-[#180A10] border-2 border-neonRed rounded-xl p-6 neon-border">
+        <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center space-x-2">
+              <span class="text-neonRed text-xl">⚡</span>
+              <h2 class="font-orbitron font-black text-lg text-neonRed tracking-wider">ACTIVE MASTER ROTATING KEY</h2>
+              <span class="bg-neonGreen/20 text-neonGreen text-[10px] font-bold px-2 py-0.5 rounded border border-neonGreen/30">ROTATION ACTIVE</span>
+            </div>
+            <p class="text-xs text-gray-300 mt-1">This master key grants instant global bypass. Rotate it whenever you want to invalidate all previous master sessions.</p>
+            
+            <div class="flex items-center space-x-3 mt-3">
+              <span id="masterKeyDisplay" class="font-mono text-lg font-bold text-white bg-black/80 border border-cyberBorder px-4 py-2 rounded-lg tracking-wide select-all">
+                Loading...
+              </span>
+              <button onclick="copyMasterKey()" class="bg-black/60 hover:bg-black border border-cyberBorder text-xs text-gray-300 px-3 py-2 rounded-lg font-semibold transition">
+                📋 Copy
+              </button>
+            </div>
+            <p id="masterLastRotated" class="text-[11px] text-gray-400 font-mono mt-2">Last Rotated: Loading...</p>
+          </div>
+
+          <button onclick="handleRotateMasterKey()"
+                  class="bg-gradient-to-r from-neonRed to-deepCrimson hover:from-deepCrimson hover:to-neonRed text-white font-rajdhani font-bold text-base px-6 py-3 rounded-lg tracking-wider uppercase transition shadow-lg neon-glow-btn flex items-center space-x-2">
+            <span>🔄</span>
+            <span>ROTATE MASTER KEY NOW</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Split Actions: Generate Keys & Broadcast Control -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- Generate Keys Form (2 cols) -->
+        <div class="lg:col-span-2 bg-cyberCard border border-cyberBorder rounded-xl p-6">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-orbitron font-bold text-base text-white flex items-center space-x-2">
+              <span>🔑</span>
+              <span>GENERATE NEW LICENSE KEYS</span>
+            </h3>
+            <span class="text-xs text-gray-400 font-mono">Custom Duration & Device Lock</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+            <div>
+              <label class="block text-xs font-bold text-gray-400 mb-1">LICENSE TIER / DURATION</label>
+              <select id="keyDurationSelect" class="w-full bg-black/70 border border-cyberBorder focus:border-neonRed text-white px-3 py-2 rounded-lg outline-none font-semibold">
+                <option value="1">24 Hours (1 Day Pass)</option>
+                <option value="7">7 Days (Weekly License)</option>
+                <option value="30" selected>30 Days (Monthly VIP)</option>
+                <option value="90">90 Days (Quarterly Pro)</option>
+                <option value="3650">Lifetime (Permanent VIP)</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-gray-400 mb-1">KEY PREFIX</label>
+              <input type="text" id="keyPrefixInput" value="XNX" placeholder="e.g. XNX, VIP, TATKAL"
+                     class="w-full bg-black/70 border border-cyberBorder focus:border-neonRed text-white px-3 py-2 rounded-lg font-mono outline-none uppercase">
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-gray-400 mb-1">DEVICE LOCK (MAX DEVICES)</label>
+              <select id="keyDeviceLockSelect" class="w-full bg-black/70 border border-cyberBorder focus:border-neonRed text-white px-3 py-2 rounded-lg outline-none font-semibold">
+                <option value="1" selected>1 Device (Strict HWID Lock)</option>
+                <option value="2">2 Devices</option>
+                <option value="999">Unlimited Devices</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-gray-400 mb-1">BATCH COUNT</label>
+              <select id="keyCountSelect" class="w-full bg-black/70 border border-cyberBorder focus:border-neonRed text-white px-3 py-2 rounded-lg outline-none font-semibold">
+                <option value="1" selected>1 Key</option>
+                <option value="5">5 Keys (Batch)</option>
+                <option value="10">10 Keys (Batch)</option>
+                <option value="25">25 Keys (Bulk)</option>
+              </select>
+            </div>
+
+            <div class="sm:col-span-2">
+              <label class="block text-xs font-bold text-gray-400 mb-1">NOTE / BUYER NAME (OPTIONAL)</label>
+              <input type="text" id="keyNoteInput" placeholder="e.g. Sold to @username on Telegram"
+                     class="w-full bg-black/70 border border-cyberBorder focus:border-neonRed text-white px-3 py-2 rounded-lg text-xs outline-none">
+            </div>
+          </div>
+
+          <button onclick="handleGenerateKeys()"
+                  class="mt-5 w-full bg-gradient-to-r from-neonRed to-deepCrimson hover:from-deepCrimson hover:to-neonRed text-white font-rajdhani font-bold text-base py-2.5 rounded-lg tracking-wider uppercase transition">
+            ⚡ GENERATE & ISSUE KEYS
+          </button>
+        </div>
+
+        <!-- MOTD Broadcast & Blacklist Card (1 col) -->
+        <div class="space-y-6">
+          <!-- Broadcast MOTD -->
+          <div class="bg-cyberCard border border-cyberBorder rounded-xl p-6">
+            <h3 class="font-orbitron font-bold text-sm text-neonCyan mb-2 flex items-center space-x-2">
+              <span>📢</span>
+              <span>LIVE CLIENT BROADCAST (MOTD)</span>
+            </h3>
+            <p class="text-xs text-gray-400 mb-3">Pushes a live announcement banner directly to all desktop app instances.</p>
+            
+            <textarea id="broadcastInput" rows="2" placeholder="Type live announcement..."
+                      class="w-full bg-black/70 border border-cyberBorder focus:border-neonCyan text-white p-2.5 rounded-lg text-xs font-mono outline-none mb-3"></textarea>
+
+            <button onclick="handleUpdateBroadcast()" class="w-full bg-cyan-700 hover:bg-cyan-600 text-white font-bold text-xs py-2 rounded-lg uppercase tracking-wider transition">
+              📢 Push Announcement
+            </button>
+          </div>
+
+          <!-- Quick HWID Blacklist -->
+          <div class="bg-cyberCard border border-cyberBorder rounded-xl p-6">
+            <h3 class="font-orbitron font-bold text-sm text-red-500 mb-2 flex items-center space-x-2">
+              <span>🚫</span>
+              <span>BLOCK DEVICE HWID</span>
+            </h3>
+            <div class="space-y-2">
+              <input type="text" id="blockHwidInput" placeholder="Enter Device HWID string..."
+                     class="w-full bg-black/70 border border-cyberBorder focus:border-red-600 text-white px-3 py-2 rounded-lg font-mono text-xs outline-none">
+              <input type="text" id="blockReasonInput" placeholder="Reason (e.g. Chargeback, Key abuse)..."
+                     class="w-full bg-black/70 border border-cyberBorder focus:border-red-600 text-white px-3 py-2 rounded-lg text-xs outline-none">
+              <button onclick="handleBlockHwid()" class="w-full bg-red-800 hover:bg-red-700 text-white font-bold text-xs py-2 rounded-lg uppercase tracking-wider transition">
+                🚫 Blacklist Device
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INTERACTIVE LICENSE MANAGEMENT TABLE -->
+      <div class="bg-cyberCard border border-cyberBorder rounded-xl p-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+          <div>
+            <h3 class="font-orbitron font-bold text-base text-white flex items-center space-x-2">
+              <span>📋</span>
+              <span>ACTIVE LICENSES DATABASE</span>
+            </h3>
+            <p class="text-xs text-gray-400">Manage, revoke, extend, or reset device locks for all issued keys.</p>
+          </div>
+
+          <!-- Filter / Search -->
+          <div class="flex items-center space-x-3">
+            <input type="text" id="tableSearchInput" oninput="renderKeysTable()" placeholder="🔍 Search keys, notes..."
+                   class="bg-black/70 border border-cyberBorder text-white text-xs px-3 py-1.5 rounded-lg outline-none">
+            <select id="tableFilterSelect" onchange="renderKeysTable()" class="bg-black/70 border border-cyberBorder text-white text-xs px-3 py-1.5 rounded-lg outline-none font-semibold">
+              <option value="all">All Keys</option>
+              <option value="active">Active Only</option>
+              <option value="revoked">Revoked</option>
+              <option value="expired">Expired</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Table Responsive Container -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="bg-black/60 text-gray-400 uppercase tracking-wider border-b border-cyberBorder">
+                <th class="p-3">License Key</th>
+                <th class="p-3">Tier</th>
+                <th class="p-3">Status</th>
+                <th class="p-3">Bound HWID</th>
+                <th class="p-3">Usage</th>
+                <th class="p-3">Expiry Date</th>
+                <th class="p-3">Note</th>
+                <th class="p-3 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="keysTableBody" class="divide-y divide-cyberBorder font-mono">
+              <tr>
+                <td colspan="8" class="p-6 text-center text-gray-500 font-sans">Loading license database...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- BLACKLISTED DEVICES TABLE -->
+      <div class="bg-cyberCard border border-cyberBorder rounded-xl p-6">
+        <h3 class="font-orbitron font-bold text-sm text-red-500 mb-3 flex items-center space-x-2">
+          <span>🛡️</span>
+          <span>BLACKLISTED DEVICES (HWID ACCESS BLOCKS)</span>
+        </h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse font-mono">
+            <thead>
+              <tr class="bg-black/60 text-gray-400 uppercase border-b border-cyberBorder">
+                <th class="p-2.5">Blocked HWID</th>
+                <th class="p-2.5">Reason</th>
+                <th class="p-2.5">Blocked Date</th>
+                <th class="p-2.5 text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody id="blockedTableBody" class="divide-y divide-cyberBorder">
+              <tr><td colspan="4" class="p-4 text-center text-gray-500">No devices currently blocked.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ACTIVITY AUDIT LOG -->
+      <div class="bg-black border border-cyberBorder rounded-xl p-4 font-mono text-xs">
+        <div class="flex items-center justify-between text-gray-400 mb-2 border-b border-cyberBorder pb-2">
+          <span class="font-bold uppercase text-neonRed">🖥️ LIVE ADMIN AUDIT TRAIL</span>
+          <span class="text-[10px]">Real-time security logs</span>
+        </div>
+        <div id="logsBox" class="space-y-1 text-gray-300 max-h-36 overflow-y-auto">
+          <div>Loading security audit events...</div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#0F0F16] border-t border-cyberBorder py-4 px-6 text-center text-xs text-gray-400">
+      <p>XNX SPEED LICENSE CONTROLLER • POWERED BY <b>SABHYA PLAYER</b> • CONTACT <a href="https://t.me/The_Sabhyaplayer" target="_blank" class="text-neonRed font-bold hover:underline">@The_Sabhyaplayer</a></p>
+    </footer>
+  </div>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 bg-cyberCard border-2 border-neonRed text-white px-5 py-3 rounded-xl shadow-2xl transition-all duration-300 transform translate-y-20 opacity-0 font-bold text-xs">
+    Toast message
+  </div>
+
+  <!-- JavaScript Application Controller -->
+  <script>
+    let adminToken = localStorage.getItem("XNX_ADMIN_TOKEN") || "";
+    let cachedData = null;
+
+    // Initialize on load
+    window.addEventListener("DOMContentLoaded", () => {
+      if (adminToken) {
+        testAuthAndLoad();
+      } else {
+        document.getElementById("loginModal").classList.remove("hidden");
+      }
+    });
+
+    function showToast(msg, isError = false) {
+      const toast = document.getElementById("toast");
+      toast.innerText = msg;
+      toast.className = `fixed bottom-6 right-6 z-50 bg-cyberCard border-2 ${isError ? 'border-red-600 text-red-300' : 'border-neonRed text-white'} px-5 py-3 rounded-xl shadow-2xl transition-all duration-300 transform translate-y-0 opacity-100 font-bold text-xs`;
+      setTimeout(() => {
+        toast.className = toast.className.replace("translate-y-0 opacity-100", "translate-y-20 opacity-0");
+      }, 3500);
+    }
+
+    async function handleLogin() {
+      const password = document.getElementById("adminPasswordInput").value.trim();
+      if (!password) return;
+
+      adminToken = password;
+      const ok = await testAuthAndLoad();
+      if (ok) {
+        localStorage.setItem("XNX_ADMIN_TOKEN", adminToken);
+        document.getElementById("loginModal").classList.add("hidden");
+        document.getElementById("loginError").classList.add("hidden");
+      } else {
+        document.getElementById("loginError").classList.remove("hidden");
+      }
+    }
+
+    function handleLogout() {
+      localStorage.removeItem("XNX_ADMIN_TOKEN");
+      adminToken = "";
+      document.getElementById("dashboardApp").classList.add("hidden");
+      document.getElementById("loginModal").classList.remove("hidden");
+      document.getElementById("adminPasswordInput").value = "";
+    }
+
+    async function testAuthAndLoad() {
+      try {
+        const res = await fetch("/api/keys", {
+          headers: { "x-admin-password": adminToken }
+        });
+        if (res.status === 200) {
+          const data = await res.json();
+          cachedData = data;
+          document.getElementById("loginModal").classList.add("hidden");
+          document.getElementById("dashboardApp").classList.remove("hidden");
+          renderDashboard(data);
+          return true;
+        }
+      } catch (e) {
+        console.error("Auth error:", e);
+      }
+      return false;
+    }
+
+    async function refreshData() {
+      if (!adminToken) return;
+      try {
+        const res = await fetch("/api/keys", {
+          headers: { "x-admin-password": adminToken }
+        });
+        if (res.ok) {
+          cachedData = await res.json();
+          renderDashboard(cachedData);
+        }
+      } catch (e) {
+        console.error("Refresh error:", e);
+      }
+    }
+
+    function renderDashboard(data) {
+      // 1. Stats
+      document.getElementById("statTotal").innerText = data.stats.totalKeys;
+      document.getElementById("statActive").innerText = data.stats.activeKeys;
+      document.getElementById("statRevoked").innerText = data.stats.revokedKeys;
+      document.getElementById("statExpired").innerText = data.stats.expiredKeys;
+      document.getElementById("statBlocked").innerText = data.stats.blockedHwids;
+
+      // 2. Master Key
+      document.getElementById("masterKeyDisplay").innerText = data.masterRotatingKey.key;
+      document.getElementById("masterLastRotated").innerText = `Last Rotated: ${new Date(data.masterRotatingKey.lastRotated).toLocaleString()}`;
+
+      // 3. Broadcast
+      if (data.broadcastMessage) {
+        document.getElementById("broadcastInput").value = data.broadcastMessage.text || "";
+      }
+
+      // 4. Tables
+      renderKeysTable();
+      renderBlockedTable(data.blockedHwids || []);
+      renderLogs(data.logs || []);
+    }
+
+    function renderKeysTable() {
+      if (!cachedData || !cachedData.keys) return;
+      const tbody = document.getElementById("keysTableBody");
+      const search = (document.getElementById("tableSearchInput").value || "").toLowerCase();
+      const filter = document.getElementById("tableFilterSelect").value;
+
+      const filtered = cachedData.keys.filter(k => {
+        if (filter !== "all" && k.status !== filter) return false;
+        if (search) {
+          const matchKey = k.key.toLowerCase().includes(search);
+          const matchNote = (k.note || "").toLowerCase().includes(search);
+          const matchTier = (k.tier || "").toLowerCase().includes(search);
+          return matchKey || matchNote || matchTier;
+        }
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-gray-500 font-sans">No matching license keys found.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(k => {
+        let statusBadge = "";
+        if (k.status === "active") {
+          statusBadge = `<span class="bg-green-900/40 text-green-400 border border-green-700/50 px-2 py-0.5 rounded text-[10px] font-bold">ACTIVE</span>`;
+        } else if (k.status === "revoked") {
+          statusBadge = `<span class="bg-red-900/40 text-red-400 border border-red-700/50 px-2 py-0.5 rounded text-[10px] font-bold">REVOKED</span>`;
+        } else {
+          statusBadge = `<span class="bg-yellow-900/40 text-yellow-400 border border-yellow-700/50 px-2 py-0.5 rounded text-[10px] font-bold">EXPIRED</span>`;
+        }
+
+        const expFormatted = new Date(k.expiresAt).toLocaleDateString();
+        const boundHwid = k.boundHwid ? `<span class="text-neonCyan">${k.boundHwid}</span>` : `<span class="text-gray-500">Unbound</span>`;
+
+        return `
+          <tr class="hover:bg-white/[0.02] transition">
+            <td class="p-3 font-bold text-white select-all">${k.key}</td>
+            <td class="p-3 text-gray-300">${k.tier}</td>
+            <td class="p-3">${statusBadge}</td>
+            <td class="p-3 text-[11px]">${boundHwid}</td>
+            <td class="p-3 text-gray-400">${k.usageCount || 0}</td>
+            <td class="p-3 text-gray-300 text-[11px]">${expFormatted}</td>
+            <td class="p-3 text-gray-400 text-[11px] font-sans truncate max-w-[120px]" title="${k.note || ''}">${k.note || '-'}</td>
+            <td class="p-3 text-right space-x-1 whitespace-nowrap">
+              <button onclick="copyText('${k.key}')" class="bg-black/60 hover:bg-black text-gray-300 px-2 py-1 rounded text-[10px] border border-cyberBorder" title="Copy Key">📋</button>
+              ${k.status === 'active' ? 
+                `<button onclick="handleKeyAction('revoke_key', '${k.id}')" class="bg-red-900/50 hover:bg-red-800 text-red-200 px-2 py-1 rounded text-[10px] font-bold" title="Revoke Access">🚫 Revoke</button>` :
+                `<button onclick="handleKeyAction('reactivate_key', '${k.id}')" class="bg-green-900/50 hover:bg-green-800 text-green-200 px-2 py-1 rounded text-[10px] font-bold" title="Reactivate">✓ Active</button>`
+              }
+              <button onclick="handleKeyAction('extend_key', '${k.id}', { addDays: 30 })" class="bg-cyan-900/50 hover:bg-cyan-800 text-cyan-200 px-2 py-1 rounded text-[10px] font-bold" title="Extend +30 Days">+30d</button>
+              <button onclick="handleKeyAction('reset_hwid', '${k.id}')" class="bg-amber-900/50 hover:bg-amber-800 text-amber-200 px-2 py-1 rounded text-[10px] font-bold" title="Reset HWID Lock">🔓 HWID</button>
+              <button onclick="handleKeyAction('delete_key', '${k.id}')" class="bg-gray-800 hover:bg-gray-700 text-gray-400 px-2 py-1 rounded text-[10px]" title="Delete">🗑</button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function renderBlockedTable(list) {
+      const tbody = document.getElementById("blockedTableBody");
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-500">No devices currently blacklisted.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = list.map(b => `
+        <tr class="hover:bg-white/[0.02]">
+          <td class="p-2.5 text-red-400 font-bold">${b.hwid}</td>
+          <td class="p-2.5 text-gray-300 font-sans">${b.reason || 'Manual Block'}</td>
+          <td class="p-2.5 text-gray-400 text-[11px]">${new Date(b.blockedAt).toLocaleDateString()}</td>
+          <td class="p-2.5 text-right">
+            <button onclick="handleUnblockHwid('${b.hwid}')" class="bg-green-900/40 hover:bg-green-800 text-green-300 border border-green-700/50 px-2.5 py-1 rounded text-[10px] font-bold">
+              🔓 Unblock Device
+            </button>
+          </td>
+        </tr>
+      `).join("");
+    }
+
+    function renderLogs(logs) {
+      const box = document.getElementById("logsBox");
+      if (logs.length === 0) {
+        box.innerHTML = `<div>No security events recorded.</div>`;
+        return;
+      }
+      box.innerHTML = logs.slice(-15).reverse().map(l => `
+        <div class="flex items-center space-x-2">
+          <span class="text-gray-500 text-[10px]">[${new Date(l.time).toLocaleTimeString()}]</span>
+          <span class="text-neonRed">⚡</span>
+          <span class="text-gray-300">${l.event}</span>
+        </div>
+      `).join("");
+    }
+
+    // Actions
+    async function apiPost(action, payload = {}) {
+      try {
+        const res = await fetch("/api/keys", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-admin-password": adminToken
+          },
+          body: JSON.stringify({ action, payload })
+        });
+        const json = await res.json();
+        if (res.ok) {
+          showToast(json.message || "Operation successful!");
+          await refreshData();
+          return json;
+        } else {
+          showToast(json.error || "Action failed", true);
+        }
+      } catch (e) {
+        showToast("Network Error: " + e.message, true);
+      }
+      return null;
+    }
+
+    async function handleRotateMasterKey() {
+      if (!confirm("Are you sure you want to ROTATE the master key?\nThis will generate a brand new key and invalidate any sessions using the previous master key!")) return;
+      await apiPost("rotate_master_key");
+    }
+
+    async function handleGenerateKeys() {
+      const durationDays = parseInt(document.getElementById("keyDurationSelect").value);
+      const prefix = document.getElementById("keyPrefixInput").value.trim() || "XNX";
+      const maxDevices = parseInt(document.getElementById("keyDeviceLockSelect").value);
+      const count = parseInt(document.getElementById("keyCountSelect").value);
+      const note = document.getElementById("keyNoteInput").value.trim();
+
+      await apiPost("create_key", {
+        durationDays,
+        prefix,
+        maxDevices,
+        count,
+        note
+      });
+      document.getElementById("keyNoteInput").value = "";
+    }
+
+    async function handleKeyAction(action, keyId, extra = {}) {
+      await apiPost(action, { keyId, ...extra });
+    }
+
+    async function handleBlockHwid() {
+      const hwid = document.getElementById("blockHwidInput").value.trim();
+      const reason = document.getElementById("blockReasonInput").value.trim() || "Admin Manual Block";
+      if (!hwid) {
+        showToast("Please enter an HWID string.", true);
+        return;
+      }
+      await apiPost("block_hwid", { hwid, reason });
+      document.getElementById("blockHwidInput").value = "";
+      document.getElementById("blockReasonInput").value = "";
+    }
+
+    async function handleUnblockHwid(hwid) {
+      await apiPost("unblock_hwid", { hwid });
+    }
+
+    async function handleUpdateBroadcast() {
+      const text = document.getElementById("broadcastInput").value.trim();
+      await apiPost("set_broadcast", { text, active: true });
+    }
+
+    function copyText(str) {
+      navigator.clipboard.writeText(str);
+      showToast(`Copied: ${str}`);
+    }
+
+    function copyMasterKey() {
+      const str = document.getElementById("masterKeyDisplay").innerText;
+      copyText(str);
+    }
+  </script>
+</body>
+</html>
