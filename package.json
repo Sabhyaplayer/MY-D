@@ -5,10 +5,11 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node server.js",
+    "build": "echo 'Build successful'"
   },
   "dependencies": {},
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=18.x"
   }
 }
