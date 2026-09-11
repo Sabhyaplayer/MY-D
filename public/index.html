@@ -204,6 +204,63 @@
         </div>
       </div>
 
+      <!-- DEVICE ID INSTANT KEY GENERATOR (HARDWARE BOUND) -->
+      <div class="bg-gradient-to-r from-[#180A10] via-cyberCard to-[#180A10] border-2 border-neonCyan rounded-xl p-6 shadow-xl">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+          <div class="flex items-center space-x-2">
+            <span class="text-neonCyan text-xl">🎯</span>
+            <h3 class="font-orbitron font-black text-base text-neonCyan tracking-wider">DEVICE ID KEY GENERATOR</h3>
+            <span class="bg-cyan-900/40 text-cyan-300 text-[10px] font-bold px-2 py-0.5 rounded border border-cyan-700/50">HARDWARE BOUND</span>
+          </div>
+          <span class="text-xs text-gray-400 font-mono">100% Offline & Online Guaranteed</span>
+        </div>
+        <p class="text-xs text-gray-300 mb-4">Paste the buyer's <b>Device ID</b> (copied from their XNX SPEED lock screen) to generate their hardware-locked activation key.</p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="sm:col-span-2">
+            <label class="block text-xs font-bold text-gray-300 mb-1">BUYER'S DEVICE ID (FROM USER'S APP)</label>
+            <input type="text" id="targetDeviceIdInput" placeholder="e.g. XNX-8A9B-1C2D"
+                   class="w-full bg-black/80 border border-cyberBorder focus:border-neonCyan text-neonCyan font-mono font-bold px-3 py-2.5 rounded-lg outline-none uppercase text-sm">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-gray-300 mb-1">LICENSE DURATION</label>
+            <select id="targetDeviceTierSelect" class="w-full bg-black/80 border border-cyberBorder focus:border-neonCyan text-white px-3 py-2.5 rounded-lg outline-none font-semibold text-sm">
+              <option value="30D" selected>30 Days (30D)</option>
+              <option value="LIFE">Lifetime VIP (LIFE)</option>
+              <option value="1D">24 Hours (1D)</option>
+              <option value="7D">7 Days (7D)</option>
+              <option value="90D">90 Days (90D)</option>
+              <option value="VIP">VIP Pro (VIP)</option>
+            </select>
+          </div>
+        </div>
+
+        <button onclick="handleGenerateDeviceKey()"
+                class="mt-4 w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-rajdhani font-bold text-base py-2.5 rounded-lg tracking-wider uppercase transition shadow-lg flex items-center justify-center space-x-2">
+          <span>⚡</span>
+          <span>GENERATE HARDWARE KEY FOR BUYER</span>
+        </button>
+
+        <!-- Output Result Box -->
+        <div id="deviceKeyResultBox" class="mt-4 p-4 bg-black/90 border border-neonCyan rounded-lg hidden">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <div class="text-[10px] font-bold uppercase text-neonCyan tracking-wider">GENERATED DEVICE KEY:</div>
+              <div id="generatedDeviceKeyText" class="font-mono text-lg font-black text-white select-all mt-0.5">XNX-30D-XXXX-XXXX</div>
+            </div>
+            <div class="flex items-center space-x-2">
+              <button onclick="copyGeneratedDeviceKey()" class="bg-cyan-900/60 hover:bg-cyan-800 text-cyan-200 border border-cyan-700/60 px-3 py-2 rounded-lg text-xs font-bold transition">
+                📋 Copy Key
+              </button>
+              <button onclick="copyTelegramDeliveryMsg()" class="bg-gradient-to-r from-neonRed to-deepCrimson hover:from-deepCrimson hover:to-neonRed text-white px-3.5 py-2 rounded-lg text-xs font-bold transition">
+                💬 Copy Telegram Delivery Msg
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Split Actions: Generate Keys & Broadcast Control -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
@@ -871,6 +928,152 @@
     async function handleUpdateBroadcast() {
       const text = document.getElementById("broadcastInput").value.trim();
       await apiPost("set_broadcast", { text, active: true });
+    }
+
+    // Pure JS Synchronous SHA-256 for Hardware Bound Keys
+    function sha256Sync(ascii) {
+      function rightRotate(value, amount) {
+        return (value >>> amount) | (value << (32 - amount));
+      }
+      const mathPow = Math.pow;
+      const maxWord = mathPow(2, 32);
+      const lengthProperty = 'length';
+      let i, j;
+      let result = '';
+      const words = [];
+      const asciiBitLength = ascii[lengthProperty] * 8;
+      let hash = [];
+      const k = [];
+      let primeCounter = 0;
+
+      const isComposite = {};
+      for (let candidate = 2; primeCounter < 64; candidate++) {
+        if (!isComposite[candidate]) {
+          for (i = 0; i < 313; i += candidate) {
+            isComposite[i] = candidate;
+          }
+          hash[primeCounter] = (mathPow(candidate, .5) * maxWord) | 0;
+          k[primeCounter++] = (mathPow(candidate, 1 / 3) * maxWord) | 0;
+        }
+      }
+      hash = hash.slice(0, 8);
+
+      ascii += '\x80';
+      while (ascii[lengthProperty] % 64 - 56) ascii += '\x00';
+      for (i = 0; i < ascii[lengthProperty]; i++) {
+        j = ascii.charCodeAt(i);
+        if (j >> 8) return '';
+        words[i >> 2] |= j << ((3 - i) % 4) * 8;
+      }
+      words[words[lengthProperty]] = ((asciiBitLength / maxWord) | 0);
+      words[words[lengthProperty]] = (asciiBitLength);
+
+      for (j = 0; j < words[lengthProperty];) {
+        const w = words.slice(j, j += 16);
+        const oldHash = hash;
+        hash = hash.slice(0, 8);
+
+        for (i = 0; i < 64; i++) {
+          const w15 = w[i - 15], w2 = w[i - 2];
+          const a = hash[0], e = hash[4];
+          const temp1 = hash[7]
+            + (rightRotate(e, 6) ^ rightRotate(e, 11) ^ rightRotate(e, 25))
+            + ((e & hash[5]) ^ ((~e) & hash[6]))
+            + k[i]
+            + (w[i] = (i < 16) ? w[i] : (
+                w[i - 16]
+                + (rightRotate(w15, 7) ^ rightRotate(w15, 18) ^ (w15 >>> 3))
+                + w[i - 7]
+                + (rightRotate(w2, 17) ^ rightRotate(w2, 19) ^ (w2 >>> 10))
+              ) | 0
+            );
+          const temp2 = (rightRotate(a, 2) ^ rightRotate(a, 13) ^ rightRotate(a, 22))
+            + ((a & hash[1]) ^ (a & hash[2]) ^ (hash[1] & hash[2]));
+
+          hash = [(temp1 + temp2) | 0, a, hash[1], hash[2], (hash[3] + temp1) | 0, hash[4], hash[5], hash[6]];
+        }
+
+        for (i = 0; i < 8; i++) {
+          hash[i] = (hash[i] + oldHash[i]) | 0;
+        }
+      }
+
+      for (i = 0; i < 8; i++) {
+        for (j = 3; j + 1; j--) {
+          const b = (hash[i] >> (j * 8)) & 255;
+          result += ((b < 16) ? 0 : '') + b.toString(16);
+        }
+      }
+      return result.toUpperCase();
+    }
+
+    let lastGeneratedDeviceKey = "";
+    let lastTargetDeviceId = "";
+    let lastTargetTier = "";
+
+    function handleGenerateDeviceKey() {
+      const devId = (document.getElementById("targetDeviceIdInput").value || "").trim().toUpperCase();
+      const tier = document.getElementById("targetDeviceTierSelect").value;
+
+      if (!devId) {
+        showToast("Please enter or paste the buyer's Device ID!", true);
+        return;
+      }
+
+      const salt = "SABHYA@XNX#PRO#2026";
+      const raw = `${devId}#${tier}#${salt}`;
+      const hex = sha256Sync(raw);
+      const generatedKey = `XNX-${tier}-${hex.substring(0, 4)}-${hex.substring(4, 8)}`;
+
+      lastGeneratedDeviceKey = generatedKey;
+      lastTargetDeviceId = devId;
+      lastTargetTier = tier;
+
+      document.getElementById("generatedDeviceKeyText").innerText = generatedKey;
+      document.getElementById("deviceKeyResultBox").classList.remove("hidden");
+
+      // Auto add to licenses database
+      const db = getLocalDB();
+      const durationDays = tier === "1D" ? 1 : tier === "7D" ? 7 : tier === "30D" ? 30 : tier === "90D" ? 90 : 3650;
+      db.keys.unshift({
+        id: "key-dev-" + Date.now(),
+        key: generatedKey,
+        tier: `Hardware Key (${tier})`,
+        durationDays,
+        createdAt: new Date().toISOString(),
+        expiresAt: new Date(Date.now() + durationDays * 86400000).toISOString(),
+        status: "active",
+        boundHwid: devId,
+        maxDevices: 1,
+        usageCount: 0,
+        note: `Generated for Device ${devId}`
+      });
+      db.logs.push({ time: new Date().toISOString(), event: `Issued Hardware Key for Device: ${devId} [${tier}]` });
+      saveLocalDB(db);
+      renderDashboard(db);
+
+      showToast(`⚡ Key Generated: ${generatedKey}`);
+    }
+
+    function copyGeneratedDeviceKey() {
+      if (lastGeneratedDeviceKey) {
+        copyText(lastGeneratedDeviceKey);
+      }
+    }
+
+    function copyTelegramDeliveryMsg() {
+      if (!lastGeneratedDeviceKey) return;
+      const msg = `🚀 *XNX SPEED - ACCESS LICENSE ACTIVATION*\n\n` +
+                  `📱 *Bound Device ID:* \`${lastTargetDeviceId}\`\n` +
+                  `⏱️ *License Tier:* ${lastTargetTier}\n` +
+                  `🔑 *Your License Key:* \`${lastGeneratedDeviceKey}\`\n\n` +
+                  `*How to activate:*\n` +
+                  `1. Open XNX SPEED Optimizer on your PC.\n` +
+                  `2. Paste your License Key above.\n` +
+                  `3. Click 'UNLOCK OPTIMIZER'.\n\n` +
+                  `Support: @The_Sabhyaplayer`;
+      navigator.clipboard.writeText(msg);
+      showToast("✓ Copied Telegram Delivery Message to Clipboard!");
     }
 
     function copyText(str) {

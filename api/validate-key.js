@@ -22,7 +22,7 @@ module.exports = (req, res) => {
   // 1. Check if HWID is blocked
   const isBlocked = DB.blockedHwids.find(b => b.hwid.toLowerCase() === hwid.toLowerCase());
   if (isBlocked) {
-    return res.status(403).json({
+    return res.status(200).json({
       valid: false,
       error: "HWID_BLOCKED",
       message: `Access Denied: Your Device HWID (${hwid}) is blocked. Reason: ${isBlocked.reason}. Contact @The_Sabhyaplayer`
@@ -43,7 +43,7 @@ module.exports = (req, res) => {
   // 3. Search Key in DB
   const foundKey = DB.keys.find(k => k.key.toLowerCase() === keyStr.toLowerCase());
   if (!foundKey) {
-    return res.status(401).json({
+    return res.status(200).json({
       valid: false,
       error: "INVALID_KEY",
       message: "Access Denied: Invalid Security Key. Contact @The_Sabhyaplayer on Telegram for an access license."
@@ -52,7 +52,7 @@ module.exports = (req, res) => {
 
   // 4. Check if Key is Revoked
   if (foundKey.status === "revoked") {
-    return res.status(403).json({
+    return res.status(200).json({
       valid: false,
       error: "KEY_REVOKED",
       message: "Access Denied: This license key has been REVOKED by Admin. Contact @The_Sabhyaplayer"
@@ -64,7 +64,7 @@ module.exports = (req, res) => {
   const expiryDate = new Date(foundKey.expiresAt);
   if (now > expiryDate) {
     foundKey.status = "expired";
-    return res.status(403).json({
+    return res.status(200).json({
       valid: false,
       error: "KEY_EXPIRED",
       message: `Access Denied: License expired on ${expiryDate.toLocaleDateString()}. Renew with @The_Sabhyaplayer`
@@ -76,7 +76,7 @@ module.exports = (req, res) => {
     if (!foundKey.boundHwid) {
       foundKey.boundHwid = hwid;
     } else if (foundKey.boundHwid.toLowerCase() !== hwid.toLowerCase()) {
-      return res.status(403).json({
+      return res.status(200).json({
         valid: false,
         error: "DEVICE_MISMATCH",
         message: `License is locked to a different device (${foundKey.boundHwid}). Contact @The_Sabhyaplayer to reset device lock.`
