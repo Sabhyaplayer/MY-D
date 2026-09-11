@@ -10,9 +10,10 @@ module.exports = (req, res) => {
   }
 
   // Verify Admin Authentication Header or query param
-  const adminPass = req.headers["x-admin-password"] || req.query.admin_password || (req.body && req.body.admin_password);
-  if (adminPass !== DB.adminSecret) {
-    return res.status(401).json({ error: "UNAUTHORIZED", message: "Invalid Admin Credentials." });
+  const rawPass = (req.headers["x-admin-password"] || req.headers["authorization"] || req.query.admin_password || (req.body && req.body.admin_password) || "").toString().replace(/^Bearer\s+/i, "").trim();
+  const isValidPass = DB.allowedSecrets.includes(rawPass.toLowerCase()) || rawPass === DB.adminSecret;
+  if (!rawPass || !isValidPass) {
+    return res.status(401).json({ error: "UNAUTHORIZED", message: "Invalid Admin Credentials. Default is SABHYA@ADMIN#2026" });
   }
 
   // GET: Fetch Dashboard Data

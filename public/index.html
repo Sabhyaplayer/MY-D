@@ -79,10 +79,17 @@
         <label class="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-2">Master Admin Password</label>
         <div class="relative">
           <input type="password" id="adminPasswordInput" placeholder="Enter Admin Secret Key..."
-                 class="w-full bg-black/70 border border-cyberBorder focus:border-neonRed text-white px-4 py-3 rounded-lg font-mono text-sm outline-none transition duration-200">
+                 onkeydown="if(event.key==='Enter') handleLogin()"
+                 class="w-full bg-black/70 border border-cyberBorder focus:border-neonRed text-white pl-4 pr-12 py-3 rounded-lg font-mono text-sm outline-none transition duration-200">
+          <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3 top-3 text-gray-400 hover:text-white text-base">
+            👁️
+          </button>
         </div>
         <p id="loginError" class="text-xs text-neonRed font-semibold mt-2 hidden">❌ Invalid Admin Credentials!</p>
-        <p class="text-[11px] text-gray-400 mt-2 font-mono">Default Key: <span class="text-neonAmber">SABHYA@ADMIN#2026</span></p>
+        <div class="flex items-center justify-between mt-2 text-[11px] text-gray-400 font-mono">
+          <span>Default Key: <b class="text-neonAmber">SABHYA@ADMIN#2026</b></span>
+          <button type="button" onclick="fillDefaultPassword()" class="text-neonCyan hover:underline font-bold">⚡ Auto-Fill</button>
+        </div>
       </div>
 
       <button onclick="handleLogin()"
@@ -415,18 +422,36 @@
       }, 3500);
     }
 
+    function togglePasswordVisibility() {
+      const inp = document.getElementById("adminPasswordInput");
+      inp.type = inp.type === "password" ? "text" : "password";
+    }
+
+    function fillDefaultPassword() {
+      const inp = document.getElementById("adminPasswordInput");
+      inp.value = "SABHYA@ADMIN#2026";
+      inp.focus();
+      handleLogin();
+    }
+
     async function handleLogin() {
       const password = document.getElementById("adminPasswordInput").value.trim();
-      if (!password) return;
+      const errEl = document.getElementById("loginError");
+      if (!password) {
+        errEl.innerText = "❌ Please enter the admin password.";
+        errEl.classList.remove("hidden");
+        return;
+      }
 
       adminToken = password;
       const ok = await testAuthAndLoad();
       if (ok) {
         localStorage.setItem("XNX_ADMIN_TOKEN", adminToken);
         document.getElementById("loginModal").classList.add("hidden");
-        document.getElementById("loginError").classList.add("hidden");
+        errEl.classList.add("hidden");
       } else {
-        document.getElementById("loginError").classList.remove("hidden");
+        errEl.innerText = "❌ Invalid Admin Password! Try default: SABHYA@ADMIN#2026";
+        errEl.classList.remove("hidden");
       }
     }
 
@@ -440,9 +465,15 @@
 
     async function testAuthAndLoad() {
       try {
-        const res = await fetch("/api/keys", {
+        let res = await fetch("/api/keys", {
           headers: { "x-admin-password": adminToken }
         });
+        if (res.status === 404) {
+          // Fallback check
+          res = await fetch("/api/keys.js", {
+            headers: { "x-admin-password": adminToken }
+          });
+        }
         if (res.status === 200) {
           const data = await res.json();
           cachedData = data;
